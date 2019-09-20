@@ -122,3 +122,5 @@
 
 ### [项目一：验证数独](practice/puzzle.c)
 
+### [项目二：多线程排序](practice/mysort.c)
+
