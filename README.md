@@ -94,6 +94,28 @@
 
   ### [多线程数组求和](multithreading/sum_arr.c)
 
+## 多进程编程
+
++ ## 常用API
+
++ ### 创建进程
+
+  ```c
+  NAME
+       fork -- create a new process
+  
+  SYNOPSIS
+  		 #include <sys/types.h>
+       #include <unistd.h>
+  
+       pid_t
+       fork(void);
+  //若成功 返回0到子进程 返回子进程的ID到父进程 
+  //若失败 返回-1到父进程 
+  ```
+
+  ### [创建一个单独的子进程](Unix/testfork.c)
+
 ## 操作系统概念书后项目
 
 ### 第四章 多线程编程
