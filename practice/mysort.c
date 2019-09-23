@@ -75,14 +75,14 @@ int main(){
     pthread_join(sort_2, NULL);
     pthread_join(merge, NULL);
       
-    for(int i = 0; i < 10; i++){
-        printf("%d ", array[i]);
-        if (i == 4)
-        {
-            printf(" ");
-        }
-    }
-    printf("\n");
+    //for(int i = 0; i < 10; i++){
+      //  printf("%d ", array[i]);
+       // if (i == 4)
+        //{
+       //     printf(" ");
+       // }
+   // }
+   // printf("\n");
 
     for (int i = 0; i < 10; ++i)
     {
