@@ -5,13 +5,50 @@
 
 #define MAX_VALUE 80
 
-typedef struct List{
-    char* command;
-    struct List* next;
+typedef struct node
+{
+	char* command;
+	struct node* next;	
 }LinkedList;
+
+LinkedList* add(LinkedList* p, char* msg){
+	LinkedList* q = (LinkedList*)malloc(sizeof(LinkedList));
+	p -> next = q;
+	q -> next = NULL;
+	q -> command = malloc(strlen(msg) + 1);
+	strcpy(q -> command, msg);
+	return q;
+}
+
+void print(LinkedList* head){
+	if (head == NULL)
+	{
+		return;
+	}
+	head = head -> next;
+	while(head != NULL){
+		printf("%s\n", head -> command);
+		head = head -> next;
+	}
+	
+}
+ 
+void freeList(LinkedList* head){
+	LinkedList* temp = head;
+	while(head != NULL){
+		temp = head -> next;
+		free(head -> command);
+		free(head);
+		head = temp;
+	}
+}
 
 int main(void)
 {
+	LinkedList* head = (LinkedList*)malloc(sizeof(LinkedList));
+	head -> command = malloc(strlen("head") + 1);
+	LinkedList* start = head;
+	strcpy(head -> command, "head");
 	while(1){
 		char args[MAX_VALUE] = { };
 		char* array[sizeof(args)] = { };
@@ -31,9 +68,19 @@ int main(void)
 		//退出
 		if (strncmp(args, "exit", 4) == 0)
 		{
+			freeList(head);
 			break;
 		}
         //printf("args = %s\n", args);
+
+		if (strncmp(args, "history", 7) == 0)
+		{
+			print(head);
+		}
+
+		LinkedList* pList = add(start, args);
+		start = pList;
+
 		p = strtok(args, " ");
 		while(p != NULL){
             if(*p != ' '){

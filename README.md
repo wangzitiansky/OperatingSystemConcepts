@@ -115,6 +115,23 @@
   ```
 
   ### [创建一个单独的子进程](Unix/testfork.c)
+  
++ ### 获取进程ID
+
+  ```c
+  SYNOPSIS
+       #include <unistd.h>
+  
+       pid_t
+       getpid(void);
+  
+       pid_t
+       getppid(void);
+  // getpid 返回进程的processID
+  // getppid 返回父进程的processID
+  ```
+
+  ### [进程的getpid()示例](实验/2.1.c)
 
 ## 操作系统概念书后项目
 
