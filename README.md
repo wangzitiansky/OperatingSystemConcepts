@@ -133,6 +133,39 @@
 
   ### [进程的getpid()示例](实验/2.1.c)
 
+## 进程通信----管道
+
++ ### 创建管道
+
+  ```c
+  #include <unistd.h>
+  #define INPUT 0
+  #define OUTPUT 1
+  int pipe(int file_descript[2])
+  //file_descript[INPUT] 用于读
+  //file_descript[OUTPUT] 用于往外面写
+  ```
+
++ ### 向管道读和写
+
+  ```c
+  resault = write(file_descript[OUTPUT], string, (strlen(string)+1));
+  if(resault == -1){
+    
+  } 
+  .....
+  resault = read(file_descript[INPUT], buf, sizeof(buf));
+  if(resault == -1){
+    
+  } else if(resault == 0){
+    
+  } else {
+    
+  }
+  ```
+
+  
+
 ## 操作系统概念书后项目
 
 ### 第四章 多线程编程
