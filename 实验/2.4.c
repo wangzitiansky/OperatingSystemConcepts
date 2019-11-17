@@ -79,7 +79,7 @@ int main(){
 			{
 				printf("Read nothing from pip_2\n");
 			} else {
-				printf("Get message = %s\n", buf_2);
+				printf("Get message from child_2 = %s\n", buf_2);
 			}
 			close(file_descript_2[INPUT]);
 			close(file_descript_1[OUTPUT]);
@@ -92,7 +92,7 @@ int main(){
 			{
 				printf("Read nothing from pip_1\n");
 			} else {
-				printf("Get message = %s\n", buf_1);
+				printf("Get message from child_1= %s\n", buf_1);
 			}
 			close(file_descript_1[INPUT]);
 		}

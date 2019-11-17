@@ -10,6 +10,8 @@ int main()
 	pid_t pid_1;
 	pid_t pid_2;
 
+	printf("Original\n");
+
 	if ((pid_1 = fork()) < 0)
 	{
 		perror("Failed to create pid_1");
