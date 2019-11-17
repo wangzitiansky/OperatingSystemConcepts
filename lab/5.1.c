@@ -19,8 +19,8 @@ pthread_mutex_t lock;
 
 void* Consumer(void* args){
 	int self = *((int*) args);
-	int n = 0;
-	while(n++ < 10){
+	int n = 1;
+	while(n++ <= 10){
 		dispatch_semaphore_wait(full, DISPATCH_TIME_FOREVER);
 		pthread_mutex_lock(&lock);
 		// printf("Buffer_Out = %d\n", Buffer_Out);
@@ -72,7 +72,7 @@ void* Producer(void* args){
 		arr[len] = num;
 		len++;
 	}
-	for (int i = 0; i < len+1; ++i)
+	for (int i = 0; i < len; ++i)
 	{
 		ch = arr[i];
 		dispatch_semaphore_wait(empty, DISPATCH_TIME_FOREVER);
