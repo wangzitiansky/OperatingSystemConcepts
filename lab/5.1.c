@@ -79,7 +79,7 @@ void* Consumer_1(void* args){
 }
 
 void* Producer(void* args){
-	char* filename = char* args;
+	char* filename = (char*) args;
 	while(1){
 		pthread_mutex_lock(&mutex_variable);
 		if ((Buffer_In + 1) % Buffer_Limit == Buffer_Out)

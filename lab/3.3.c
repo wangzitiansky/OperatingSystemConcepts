@@ -32,7 +32,7 @@ int getarray(char args[], char* array[]){
             		state = IS_CIN;
             	}
         		array[i] = p;
-    			printf("array[%d] = %s\n", i, array[i]);
+    			// printf("array[%d] = %s\n", i, array[i]);
     			i++;
             }
 			p = strtok(NULL, " ");
