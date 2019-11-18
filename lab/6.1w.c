@@ -6,8 +6,8 @@
 #include <sys/ipc.h>
 #include <sys/msg.h>
 
-#define SERVER_KEY_PATHNAME "key"
-#define PROJECT_ID 'M'
+#define SERVER_KEY_PATHNAME "test.txt"
+#define PROJECT_ID 'B'
 
 struct message_text {
     int qid;
@@ -19,24 +19,20 @@ struct message {
     struct message_text message_text;
 };
 
+
 int main (int argc, char **argv)
 {
     key_t server_queue_key;
     int server_qid, myqid;
     struct message my_message, return_message;
 
-    // create my client queue for receiving messages from server
-    if ((myqid = msgget (IPC_PRIVATE, 0660)) == -1) {
-        perror ("msgget: myqid");
-        exit (1);
-    }
 
     if ((server_queue_key = ftok (SERVER_KEY_PATHNAME, PROJECT_ID)) == -1) {
         perror ("ftok");
         exit (1);
     }
 
-    if ((server_qid = msgget (server_queue_key, 0)) == -1) {
+    if ((server_qid = msgget (server_queue_key, 0644 | IPC_CREAT)) == -1) {
         perror ("msgget: server_qid");
         exit (1);
     }
@@ -57,15 +53,6 @@ int main (int argc, char **argv)
             perror ("client: msgsnd");
             exit (1);
         }
-
-        // read response from server
-        if (msgrcv (myqid, &return_message, sizeof (struct message_text), 0, 0) == -1) {
-            perror ("client: msgrcv");
-            exit (1);
-        }
-        printf("\n");
-        // process return message from server
-        printf ("Message received from server: %s\n\n", return_message.message_text.buf);  
 
         printf ("Please type a message: ");
     }

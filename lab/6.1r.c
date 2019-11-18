@@ -6,8 +6,8 @@
 #include <sys/ipc.h>
 #include <sys/msg.h>
 
-#define SERVER_KEY_PATHNAME "key"
-#define PROJECT_ID 'M'
+#define SERVER_KEY_PATHNAME "test.txt"
+#define PROJECT_ID 'B'
 #define QUEUE_PERMISSIONS 0660
 
 struct message_text {
@@ -31,12 +31,12 @@ int main (int argc, char **argv)
         exit (1);
     }
 
-    if ((qid = msgget (msg_queue_key, IPC_CREAT | QUEUE_PERMISSIONS)) == -1) {
+    if ((qid = msgget (msg_queue_key, 0644)) == -1) {
         perror ("msgget");
         exit (1);
     }
 
-    printf ("Server: Hello, World!\n");
+    printf ("Hello, World!\n");
 
     while (1) {
         // read an incoming message
@@ -51,18 +51,5 @@ int main (int argc, char **argv)
         int length = strlen (message.message_text.buf);
         char buf [20];
         printf("结果是: %s\n", message.message_text.buf);
-        sprintf (buf, " %d", length);
-        strcat (message.message_text.buf, buf);
-
-        int client_qid = message.message_text.qid;
-        message.message_text.qid = qid;
-
-        // send reply message to client
-        if (msgsnd (client_qid, &message, sizeof (struct message_text), 0) == -1) {  
-            perror ("msgget");
-            exit (1);
-        }
-
-        printf ("Server: response sent to client.\n");
     }
 }
