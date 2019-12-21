@@ -9,18 +9,17 @@
 #include<string.h>
 
 #define BUF_SIZE 1024
-#define SHM_KEY 0x1024
+#define SHM_KEY 0x2048
 
 typedef struct shmseg
 {
 	int cnt;
 	char buf[BUF_SIZE];
-	int complete;
 }shmseg;
 
 int fill_buffer(char* bufptr, int size){
 	int filled_count;
-	static char ch = 'A';
+	char ch = 'A';
 	memset(bufptr, ch, size - 1);
 	bufptr[size - 1] = '\0';
 	filled_count = strlen(bufptr);
@@ -33,34 +32,27 @@ int main(int argc, char const *argv[])
 	shmseg* shmp;
 	char* bufptr;
 	int space_availabel;
-
-	shmid = shmget(SHM_KEY, sizeof(shmseg), 0644|IPC_CREAT);
+	// 内核中不存在和key值相等的共享内存则创造一个 存在则报错
+	shmid = shmget(SHM_KEY, sizeof(shmseg) * BUF_SIZE, 0666|IPC_CREAT);
 	if (shmid == -1)
 	{
 		perror("获取共享内存失败");
 		return 1;
 	}
-
-	shmp = shmat(shmid, NULL, 0);
+	// 内核标识符  存在地址 NULL为自动地址 读写模式
+	shmp = (shmseg*)shmat(shmid, NULL, 0);
 	if (shmp == (void*) -1)
 	{
 		perror("共享内存映射失败");
 		return 1;
 	}
 	bufptr = shmp -> buf;
-	space_availabel = BUF_SIZE;
 
-	shmp -> cnt = fill_buffer(bufptr, space_availabel);
-	bufptr = shmp -> buf;
-	shmp -> complete = 1;
+	shmp -> cnt = fill_buffer(bufptr, BUF_SIZE - 1);
+	printf("写了 %d bytes\n", shmp -> cnt);
 	if (shmdt(shmp) == -1)
 	{
 		perror("shmdt");
-		return 1;
-	}
-	if (shmctl(shmid, IPC_CREAT, 0) == -1)
-	{
-		perror("shmid");
 		return 1;
 	}
 	printf("finished\n");

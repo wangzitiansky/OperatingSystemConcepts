@@ -8,61 +8,48 @@
 
 #define SERVER_KEY_PATHNAME "key"
 #define PROJECT_ID 'M'
-#define QUEUE_PERMISSIONS 0660
+#define QUEUE_PERMISSIONS 0666
+#define MAXSIZE 1024
+#define NUM_SEND 10
 
-struct message_text {
-    int qid;
-    char buf [200];
-};
 
 struct message {
-    long message_type;
-    struct message_text message_text;
+    long type;
+    char text[MAXSIZE];
 };
 
 int main (int argc, char **argv)
 {
-    key_t msg_queue_key;
-    int qid;
-    struct message message;
+   key_t key;
+   long qid;
+   size_t n;
+   struct message m;
+   int result;
+   
+   key = 168;
 
-    if ((msg_queue_key = ftok (SERVER_KEY_PATHNAME, PROJECT_ID)) == -1) {
-        perror ("ftok");
-        exit (1);
-    }
+   qid = msgget(key, IPC_CREAT | 0666);
+   if (qid < 0)
+   {
+        perror("can not msgget");
+        exit(1);
+   }
 
-    if ((qid = msgget (msg_queue_key, IPC_CREAT | QUEUE_PERMISSIONS)) == -1) {
-        perror ("msgget");
-        exit (1);
-    }
+   for (int i = 0; i < NUM_SEND; ++i)
+   {
+       printf("接受第%d条\n", i+1);
+       result = msgrcv(qid, &m, MAXSIZE-1, 0, 0);
+       printf("get %d bytes\n", result);
+       if (result < 0)
+       {
+           perror("msgrcv");
+           exit(1);
+       }
+       printf("%s\n", m.text);
+   }
 
-    printf ("Server: Hello, World!\n");
+  if(msgctl(qid, IPC_RMID, NULL) == -1){
+    perror("删除消息队列失败");    
+  }
 
-    while (1) {
-        // read an incoming message
-        if (msgrcv (qid, &message, sizeof (struct message_text), 0, 0) == -1) {
-            perror ("msgrcv");
-            exit (1);
-        }
-
-        printf ("Server: message received.\n");
-
-        // process message
-        int length = strlen (message.message_text.buf);
-        char buf [20];
-        printf("结果是: %s\n", message.message_text.buf);
-        sprintf (buf, " %d", length);
-        strcat (message.message_text.buf, buf);
-
-        int client_qid = message.message_text.qid;
-        message.message_text.qid = qid;
-
-        // send reply message to client
-        if (msgsnd (client_qid, &message, sizeof (struct message_text), 0) == -1) {  
-            perror ("msgget");
-            exit (1);
-        }
-
-        printf ("Server: response sent to client.\n");
-    }
 }

@@ -6,76 +6,41 @@
 #include <sys/ipc.h>
 #include <sys/msg.h>
 
-#define SERVER_KEY_PATHNAME "key"
-#define PROJECT_ID 'M'
-
-struct message_text {
-    int qid;
-    char buf [200];
-};
+#define MAXSIZE 1024
+#define NUM_SEND 10
 
 struct message {
-    long message_type;
-    struct message_text message_text;
+    long type;
+    char text[MAXSIZE];
 };
 
 int main (int argc, char **argv)
 {
-    key_t server_queue_key;
-    int server_qid, myqid;
-    struct message my_message, return_message;
+    key_t key;
+    long qid;
+    struct message m;
 
-    // create my client queue for receiving messages from server
-    if ((myqid = msgget (IPC_PRIVATE, 0660)) == -1) {
+    key = 168;
+
+    if ((qid = msgget (key, IPC_CREAT | 0666)) == -1) {
         perror ("msgget: myqid");
         exit (1);
     }
 
-    if ((server_queue_key = ftok (SERVER_KEY_PATHNAME, PROJECT_ID)) == -1) {
-        perror ("ftok");
-        exit (1);
-    }
-
-    if ((server_qid = msgget (server_queue_key, 0)) == -1) {
-        perror ("msgget: server_qid");
-        exit (1);
-    }
-
-    my_message.message_type = 1;
-    my_message.message_text.qid = myqid;
-
-    printf ("Please type a message: ");
-
-    while (fgets (my_message.message_text.buf, 198, stdin)) {
-        // remove newline from string
-        int length = strlen (my_message.message_text.buf);
-        if (my_message.message_text.buf [length - 1] == '\n')
-           my_message.message_text.buf [length - 1] = '\0';
-
-        // send message to server
-        if (msgsnd (server_qid, &my_message, sizeof (struct message_text), 0) == -1) {
-            perror ("client: msgsnd");
-            exit (1);
+    for (int i = 0; i < NUM_SEND; ++i)
+    {
+        printf("输入第%d条消息:\n", i+1);
+        fgets(m.text, MAXSIZE, stdin);
+        m.type = 1;
+        int ret = msgsnd(qid, &m, strlen(m.text), 0);
+        if (ret< 0)
+        {
+            perror("erro in send");
+            exit(1);
+        } else {
+            printf("sended\n");
         }
-
-        // read response from server
-        if (msgrcv (myqid, &return_message, sizeof (struct message_text), 0, 0) == -1) {
-            perror ("client: msgrcv");
-            exit (1);
-        }
-        printf("\n");
-        // process return message from server
-        printf ("Message received from server: %s\n\n", return_message.message_text.buf);  
-
-        printf ("Please type a message: ");
     }
-    // remove message queue
-    if (msgctl (myqid, IPC_RMID, NULL) == -1) {
-            perror ("client: msgctl");
-            exit (1);
-    }
-
-    printf ("Client: bye\n");
-
-    exit (0);
+    return 0;
+    
 }
