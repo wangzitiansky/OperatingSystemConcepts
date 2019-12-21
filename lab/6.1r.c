@@ -6,11 +6,13 @@
 #include <sys/ipc.h>
 #include <sys/msg.h>
 
+
 #define SERVER_KEY_PATHNAME "key"
 #define PROJECT_ID 'M'
 #define QUEUE_PERMISSIONS 0666
 #define MAXSIZE 1024
 #define NUM_SEND 10
+
 
 
 struct message {

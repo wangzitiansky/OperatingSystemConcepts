@@ -6,19 +6,23 @@
 #include <sys/ipc.h>
 #include <sys/msg.h>
 
+
 #define MAXSIZE 1024
 #define NUM_SEND 10
+
 
 struct message {
     long type;
     char text[MAXSIZE];
 };
 
+
 int main (int argc, char **argv)
 {
     key_t key;
     long qid;
     struct message m;
+
 
     key = 168;
 
@@ -40,7 +44,8 @@ int main (int argc, char **argv)
         } else {
             printf("sended\n");
         }
-    }
+
+    
     return 0;
     
 }
